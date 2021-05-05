@@ -10,18 +10,24 @@ export default {
     },
   },
   render() {
-    const rem = Math.round(this.size / 4);
+    const rem = Math.round(this.$props.size / 4);
     const slot = this.$slots.default ? this.$slots.default() : [];
 
-    return slot.map((child) => {
-      return h(
-        "div",
-        {
-          style: `margin-left: ${rem}rem;`,
-        },
-        child
-      );
-    });
+    return h(
+      "div",
+      {
+        class: "stack",
+      },
+      slot.map((child) => {
+        return h(
+          "div",
+          {
+            style: `margin-left: ${rem}rem;`,
+          },
+          child
+        );
+      })
+    );
   },
 };
 </script>

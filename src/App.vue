@@ -1,7 +1,7 @@
 <template>
   <Stack size="4">
     <div>hello</div>
-    <Stack size="4">
+    <Stack size="6">
       <div>hello</div>
       <div>hello</div>
     </Stack>
