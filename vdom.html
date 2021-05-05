@@ -2,6 +2,9 @@
   .red {
     color: red;
   }
+  .green {
+    color: green;
+  }
 </style>
 
 <div id="app"></div>
@@ -17,7 +20,7 @@
 
   function mount(vnode, container) {
     // create tag
-    const el = document.createElement(vnode.tag);
+    const el = (vnode.el = document.createElement(vnode.tag));
     // set any props as attrs
     if (vnode.props) {
       Object.entries(vnode.props).forEach(([attr, val]) =>
@@ -38,6 +41,45 @@
     container.appendChild(el);
   }
 
+  // update DOM with minimal changes
+  function patch(n1, n2) {
+    // compare props
+    if (n1.props) {
+      Object.entries(n1.props).forEach(([attr, val]) => {
+        if (!n2.props) {
+          return n1.el.removeAttribute(attr);
+        }
+        if (n2.props[attr] !== val) {
+          return n1.el.setAttribute(attr, n2.props[attr]);
+        }
+      });
+    }
+    // compare children
+    if (typeof n1.children === "string") {
+      // if both are text
+      if (typeof n2.children === "string") {
+        // compare of text is same
+        if (n1.children !== n2.children) {
+          n1.el.textContent = n2.children;
+        }
+      } else {
+        n2.children.forEach((child) => mount(child, n1.el));
+      }
+      // if v2 is not text
+      // use mount function
+    } else {
+      // children are nodes
+      // if n2 children is string, just replace
+      if (typeof n2.children === "string") {
+        n1.el.textContent = n2.children;
+      } else {
+        // both are nodes
+        // run patch recursively
+        n1.children.forEach((child, index) => patch(child, n2.children[index]));
+      }
+    }
+  }
+
   const vdom = h("div", { class: "red" }, [
     h("span", null, "hello"),
     h("span", { id: "child" }, [
@@ -46,5 +88,15 @@
     ]),
   ]);
 
+  const vdom2 = h("div", { class: "green" }, [
+    h("span", null, "hello"),
+    h("span", { id: "child" }, [
+      h("div", { style: "color: red;" }, "I am the best"),
+      h("span", { class: "green" }, "I am new"),
+    ]),
+  ]);
+
   mount(vdom, document.getElementById("app"));
+
+  patch(vdom, vdom2);
 </script>
