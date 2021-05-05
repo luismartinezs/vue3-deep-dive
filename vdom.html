@@ -1,0 +1,34 @@
+<div id="app"></div>
+
+<script>
+  function h(tag, props, children) {
+    return {
+      tag,
+      props,
+      children,
+    };
+  }
+
+  function mount(vnode, container) {
+    if (typeof vnode === "string") {
+      container.textContent = vnode;
+    } else {
+      // create tag
+      const el = document.createElement(vnode.tag);
+      // set any props as attrs
+      vnode.props &&
+        Object.entries(vnode.props).forEach(([attr, val]) => (el[attr] = val));
+      // recursively do the same on children
+      vnode.children?.length && vnode.children.map((child) => mount(child, el));
+      // append children to tag el
+      container.appendChild(el);
+    }
+  }
+
+  const vdom = h("div", { class: "red" }, [
+    h("span", null, ["hello"]),
+    h("span", { id: "child" }, ["Bye"]),
+  ]);
+
+  mount(vdom, document.getElementById("app"));
+</script>
