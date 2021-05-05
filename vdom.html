@@ -43,41 +43,31 @@
 
   // update DOM with minimal changes
   function patch(n1, n2) {
-    // compare props
-    if (n1.props) {
-      Object.entries(n1.props).forEach(([attr, val]) => {
-        if (!n2.props) {
-          return n1.el.removeAttribute(attr);
-        }
-        if (n2.props[attr] !== val) {
-          return n1.el.setAttribute(attr, n2.props[attr]);
-        }
-      });
-    }
-    // compare children
-    if (typeof n1.children === "string") {
-      // if both are text
-      if (typeof n2.children === "string") {
-        // compare of text is same
-        if (n1.children !== n2.children) {
-          n1.el.textContent = n2.children;
-        }
-      } else {
-        n2.children.forEach((child) => mount(child, n1.el));
-      }
-      // if v2 is not text
-      // use mount function
-    } else {
-      // children are nodes
-      // if n2 children is string, just replace
-      if (typeof n2.children === "string") {
-        n1.el.textContent = n2.children;
-      } else {
-        // both are nodes
-        // run patch recursively
-        n1.children.forEach((child, index) => patch(child, n2.children[index]));
-      }
-    }
+   if (n1.tag === n2.tag) {
+     const el = n2.el = n1.el
+     // props
+     const oldProps = n1.props || {}
+     const newProps = n2.props || {}
+
+     Object.entries(newProps).forEach(([key, newVal]) => {
+       const oldVal = oldProps[key]
+       if (newVal !== oldVal) {
+         el.setAttribute(key, newVal)
+       }
+     })
+
+     Object.keys(oldProps).forEach(key => {
+       if (!key in newProps) {
+         el.removeAttribute(key)
+       }
+     })
+
+    //  children
+    // rather complex part, I don't want to type it in
+    // Look at it here https://codepen.io/GreggPollack/pen/MWavQme?editors=1000
+   } else { 
+     // replace
+   }
   }
 
   const vdom = h("div", { class: "red" }, [
